@@ -1,0 +1,90 @@
+.statusBar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.title {
+  font: var(--font);
+  font-weight: var(--bold);
+  width: 150px;
+  text-align: center;
+}
+
+.title > .r {
+  color: var(--select);
+}
+
+.title > .b {
+  color: var(--foreground);
+}
+
+.searchBar {
+  width: 5em;
+  font: var(--font);
+  font-size: 18px;
+  height: 1.5em;
+  border: 1px solid var(--border);
+}
+
+.buttonBar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 5px 0px;
+  flex-wrap: wrap; 
+}
+
+.buttonBar.nowrap {
+  flex-wrap: nowrap;
+}
+
+.timerBar {
+  width: 65px;
+  font: var(--menufont);
+  font-size: 18px;
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  margin-left: 2px;
+  height: 1.5em;
+  vertical-align: top;
+}
+
+.buttonBar {
+  float: left;
+}
+
+.tutorialLink {
+  background: var(--background);
+  border: 1px solid var(--border);
+  padding: 3px;
+  margin: 0px 1px;
+  height: 1.5em;
+  cursor: pointer;
+  color: var(--foreground);
+  border-radius: 5px;
+  font: var(--menufont);
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 100;
+}
+
+.tutorial {
+  position: fixed;
+  width: 80vw;
+  height: 80vh;
+  top: 10vh;
+  left: 10vw;
+  border: 1px solid grey;
+  border-radius: 4px;
+  background: var(--backround);
+  z-index: 4;
+}
+
+.tutorial iframe {
+  height: 100%;
+  width: 100%;
+}

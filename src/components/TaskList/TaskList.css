@@ -1,0 +1,24 @@
+.task.collapsed .listContent {
+  display: none !important;
+}
+
+.list > .listFrame > .listContent {
+  height: fit-content;
+  flex-grow: 1;
+  padding-bottom: 50%;
+  width: calc(100% + 7px);
+}
+
+.list > .listFrame > .listContent > .task {
+  padding-left: 5px;
+  padding-top: var(--lineSpacing);
+  padding-bottom: calc(var(--lineSpacing) / 2);
+}
+
+.listContent {
+  padding-bottom: 5px;
+}
+
+.task .task .listContent:empty {
+  padding: 0;
+}

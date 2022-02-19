@@ -1,0 +1,312 @@
+.infoArea {
+  position: fixed;
+  z-index: 4 !important;
+  top: 10vh;
+  left: 10vw;
+  height: 80vh;
+  width: 80vw;
+  display: none;
+  background: #000;
+  font: var(--font);
+  font-size: var(--fontSize);
+}
+
+.event > .taskContent > div:not(.options) > span.endDate {
+  width: fit-content;
+}
+
+.event > .taskContent > span.startDate {
+  font-size: 14px;
+  border: 1px solid var(--select);
+  border-radius: 5px;
+  padding: 0px 2px;
+  margin-right: 1px;
+  background-color: var(--select);
+  color: var(--background);
+  width: 3em;
+  height: 1.5em;
+  /* top: calc(var(--fontSize) * 0.6 - 7px); */
+}
+
+.event > .taskContent .startEndSpans {
+  flex-direction: row;
+}
+
+.event span.endDate {
+  margin-left: 5px;
+}
+
+.taskContent {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+}
+
+.endDate {
+  color: var(--endDate);
+}
+
+.options {
+  height: 60px;
+  width: calc(100% + 5px);
+  max-width: 250px;
+  background-color: var(--background);
+  position: absolute;
+  top: calc(100% + 5px);
+  left: -5px;
+  z-index: 2;
+  opacity: 1;
+  border-radius: 5px;
+}
+
+.options * {
+  z-index: 2;
+}
+
+.options .buttonBar {
+  margin: 3px 0;
+  justify-content: space-around;
+}
+
+.options button {
+  font-size: 14px !important;
+  margin: 0 1px;
+  padding: 0px 3.5px;
+}
+
+.optionsInput {
+  font: var(--font);
+  height: 24px;
+  font-size: 0.75em;
+  width: 50%;
+  background-color: var(--midground);
+  border: 1px solid var(--border);
+}
+
+.buttonBar {
+  float: left;
+}
+
+.buttonBar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 5px 0px;
+  flex-wrap: wrap; 
+}
+
+.buttonBar.nowrap {
+  flex-wrap: nowrap;
+}
+
+.button {
+  font: var(--menufont);
+  font-size: 12px;
+  height: 1.5em;
+  border: none;
+  border-radius: 6px;
+  margin: 1px;
+  cursor: pointer;
+}
+
+.task .task.heading > div > textarea {
+  font-weight: var(--fontWeight);
+}
+
+.task .task textarea {
+  font-size: 85%;
+}
+
+.task .task .startEndSpans {
+  height: 0.85em;
+  line-height: 1em;
+}
+
+/* NEW INFO AREA */
+
+.timeDiv span {
+  margin: 0px 0px 0px 1.5px;
+  font: var(--menufont);
+  font-size: 14px;
+}
+
+.e, .s {
+  width: 1em;
+  text-align: right;
+  cursor: ns-resize;
+}
+
+.timeDiv > span {
+  display: flex;
+  flex-wrap: nowrap;
+  margin: 1px;
+}
+
+.startSpan.start {
+  color: var(--startDate);
+}
+
+.startSpan.end {
+  color: var(--endDate);
+  margin-left: 3px;
+}
+
+.notesSpan {
+  color: var(--foreground);
+}
+
+.disable-select * {
+  -webkit-user-select: none !important;  
+  -moz-user-select: none !important;    
+  -ms-user-select: none !important;      
+  user-select: none !important;
+}
+
+.infoSpan {
+  font: var(--menufont);
+  display: block;
+  font-size: 14px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  flex-grow: 1;
+  width: 100%;
+  height: 1.5em;
+}
+
+.task.event {
+  background: var(--event) !important;
+}
+
+
+.task .task {
+  background: transparent;
+}
+
+.button.complete, .task.complete textarea {
+  opacity: 0.5;
+}
+
+.task.complete textarea {
+  text-decoration: line-through;
+}
+
+.button.important {
+  border: 1px solid var(--important);
+  font-weight: bold;
+}
+
+.task.event.important {
+  background: var(--importantE) !important;
+}
+
+.task.important {
+  background: var(--important) !important;
+}
+
+.task.maybe {
+  opacity: 0.75;
+}
+
+.task.important {
+  border: 1px solid var(--border);
+}
+
+.info {
+  height: calc(var(--padding) / 2);
+  width: calc(var(--padding) / 2);
+  margin: 2px;
+  border: 1px solid var(--select);
+  background-color: var(--select);
+  border-radius: 100%;
+  vertical-align: text-top;
+  cursor: pointer;
+  /* top: calc(var(--fontSize) * 0.6 - 5px); */
+}
+
+.taskInfo {
+  height: 12px;
+  width: 100%;
+  display: flex;
+  padding-left: calc(var(--padding));
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.taskInfo * {
+  margin-right: 5px;
+  font: var(--menufont);
+  font-size: 10px;
+}
+
+.taskInfo *:empty {
+  display: none;
+}
+
+.taskInfo:empty {
+  display: none;
+}
+
+.task .task .listContent:empty {
+  padding: 0;
+}
+
+.repeatButton.true {
+  color: var(--select);
+}
+
+.startDate {
+  color: var(--startDate);
+}
+
+span.startDate, span.endDate {
+  font: var(--menufont);
+  font-size: 11px;
+  width: 2.5em;
+  text-align: center;
+}
+
+:not(.heading) .task.heading > div > textarea, .list > input {
+  font-weight: var(--bold);
+}
+
+.task.collapsed .listContent {
+  display: none !important;
+}
+
+.task.collapsed textarea {
+  opacity: 0.75;
+}
+
+.task.collapsed {
+  margin-bottom: 0.5em;
+}
+
+.task .task {
+  padding-left: var(--padding);
+}
+
+.task {
+  list-style: none;
+  margin-top: 10px;
+  border-radius: 5px;
+  background: var(--river);
+  /* padding-top: calc(var(--lineSpacing) / 2);
+  padding-bottom: calc(var(--lineSpacing) / 4); */
+}
+
+.list > .listFrame > .listContent > .task {
+  padding-left: 5px;
+  padding-top: var(--lineSpacing);
+  padding-bottom: calc(var(--lineSpacing) / 2);
+}
+
+.dropArea.droppable {
+  height: 50px;
+  background: #00000088;
+}
+
+.dropArea {
+  height: 3px;
+  border-radius: 10px;
+}

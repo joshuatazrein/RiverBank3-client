@@ -1,0 +1,66 @@
+.centerAlign {
+  text-align: center;
+}
+
+.container.zoomed .frame:not(.zoomed) {
+  display: none !important;
+}
+
+.container.zoomed .frame.zoomed {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.container.zoomed .list.zoomed {
+  max-width: 750px;
+}
+
+.container {
+  height: calc(100% - 2em);
+  width: 100%;
+  flex-grow: 1;
+}
+
+.container.hideComplete .complete {
+  display: none;
+}
+
+
+.rightAlign {
+  position: absolute;
+  right: 0;
+}
+
+.table {
+  height: calc(100vh - 37px);
+  width: 100vw;
+  overflow: auto;
+  padding: 30px;
+  position: fixed;
+  top: 37px;
+  left: 0;
+  z-index: 10;
+  display: table;
+  flex-direction: column;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.selectMenu {
+  position: fixed;
+  background: var(--background);
+  background-blend-mode: color-dodge;
+  color: var(--foreground);
+  z-index: 3;
+  padding: 8px;
+}
+
+.selectMenu p:hover {
+  color: var(--select);
+}
+
+.selectMenu p {
+  margin: 0;
+  font: var(--menuFont);
+  font-size: 18px;
+}
