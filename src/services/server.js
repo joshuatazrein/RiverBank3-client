@@ -1,22 +1,38 @@
 import initialData from '../assets/json/initialData.json';
 const Axios = require('axios');
-var fs = require('browserify-fs');
 
 export function uploadSettings() {
   // upload settings to mySQL
-  uploadData();
+  console.log('uploading data...');
+  Axios.post('/server/uploadsettings', {
+    username: window.username,
+    encryptedPassword: window.password,
+    data: window.data.settings,
+  }).then((result) => {
+    console.log(result.data);
+  }).catch((err) => {
+    console.log(err);
+  });
 }
 
 export function uploadTasks() {
   // upload all tasks
-  uploadData();
+  console.log('uploading tasks...', window.password, window.username, window.data.tasks);
+  Axios.post('/server/uploadtasks', {
+    username: window.username,
+    encryptedPassword: window.password,
+    data: window.data.tasks,
+  }).then((result) => {
+    console.log(result.data);
+  }).catch((err) => {
+    console.log(err);
+  });
 }
 
 export function uploadData() {
   // upload data to mySQL
-  console.log('uploading data...');
-  fs.writeFile(`/data/${window.password}.json`, JSON.stringify(window.data));
-  console.log('uploaded data', window.data);
+  uploadSettings();
+  uploadTasks();
 }
 
 export function initializeData() {
@@ -26,11 +42,4 @@ export function initializeData() {
   window.data.tasks['1'].title = new Date().toDateString();
   // upload to thing
   uploadData();
-}
-
-export function loadData() {
-  // load data
-  const data = fs.readFile(`/data/${window.password}.json`).toString();
-  window.data = JSON.parse(data);
-  console.log('downloaded data');
 }
