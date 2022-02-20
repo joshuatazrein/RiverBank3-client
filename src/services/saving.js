@@ -23,9 +23,8 @@ export function restore() {
         alert('invalid JSON syntax');
         return;
       }
-      server.testLargeData();
-      // server.uploadData();
-      // setTimeout(window.location.reload, 500);
+      server.uploadData();
+      setTimeout(window.location.reload, 500);
     } else if (ev.key === 'Escape') {
       textarea.remove();
       setTimeout(() => window.preventReturn = false, 100);
