@@ -43,15 +43,3 @@ export function initializeData() {
   // upload to thing
   uploadData();
 }
-
-export function testLargeData() {
-  Axios.post('/server/largeposttest', {
-    username: window.username,
-    encryptedPassword: window.password,
-    data: window.data.tasks,
-  }).then((result) => {
-    console.log(result.data);
-  }).catch((err) => {
-    console.log(err);
-  });
-}
