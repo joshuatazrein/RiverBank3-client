@@ -43,6 +43,7 @@ export default function SignIn (props) {
         username: username,
         password: password,
       }).then((response) => {
+        console.log(response);
         if (response.data === 'duplicate username') {
           alert('username taken');
           setUsername('');
@@ -55,6 +56,7 @@ export default function SignIn (props) {
           confirm();
         }
       }).catch((err) => {
+        console.log(err);
       });
     } else if (format === 'login') {
       if (username.length === 0) {
@@ -68,6 +70,7 @@ export default function SignIn (props) {
         username: username,
         password: password,
       }).then((response) => {
+        console.log(response);
         if (response.data === 'wrong username') {
           alert('username does not exist');
           setUsername('');
@@ -85,6 +88,7 @@ export default function SignIn (props) {
           confirm();
         }
       }).catch((err) => {
+        console.log(err);
       });
     }
   }
