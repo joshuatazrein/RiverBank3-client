@@ -3,7 +3,7 @@ const Axios = require('axios');
 
 export function uploadSettings() {
   // upload settings to mySQL
-  Axios.post('http://localhost:3001/uploadsettings', {
+  Axios.post('/server/uploadsettings', {
     username: window.username,
     encryptedPassword: window.password,
     data: window.data.settings,
@@ -12,7 +12,7 @@ export function uploadSettings() {
 
 export function uploadTasks() {
   // upload all tasks
-  Axios.post('http://localhost:3001/uploadtasks', {
+  Axios.post('/server/uploadtasks', {
     username: window.username,
     encryptedPassword: window.password,
     data: window.data.tasks,

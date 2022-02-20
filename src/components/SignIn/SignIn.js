@@ -31,7 +31,7 @@ export default function SignIn (props) {
         alert('enter a password');
         return;
       }
-      Axios.post('http://localhost:3001/createuser', {
+      Axios.post('/server/createuser', {
         username: username,
         password: password,
       }).then((response) => {
@@ -56,7 +56,7 @@ export default function SignIn (props) {
         alert('enter a password');
         return;
       }
-      Axios.post('http://localhost:3001/login', {
+      Axios.post('/server/login', {
         username: username,
         password: password,
       }).then((response) => {
