@@ -12,6 +12,10 @@ export default function SignIn (props) {
   const [password2, setPassword2] = useState('');
   const [format, setFormat] = useState('login');
 
+  Axios.get('/server/').then((response) => {
+    console.log(response);
+  });
+
   const reset = () => {
     setPassword2('');
     setPassword('');
