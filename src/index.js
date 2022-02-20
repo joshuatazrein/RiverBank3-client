@@ -281,9 +281,11 @@ function init() {
   window.width = Math.floor(window.innerWidth / 200);
   window.prevWidth = Math.floor(window.innerWidth / 200);
   window.app = React.createRef();
+  console.log(window.data);
   ReactDOM.render(<App ref={window.app} />, document.getElementById('root'));
   $(document).on('keydown', keyComms.keyComms);
-  display.focus(window.data.settings.focused);
+  console.log('focusing: ', [window.data.settings.focused]);
+  setTimeout(() => display.focus(window.data.settings.focused), 100);
   display.setTheme(window.data.settings.theme);
   window.addEventListener('resize', () => {
     if (window.innerWidth / 10 !== Math.floor(window.innerWidth / 10)) return;

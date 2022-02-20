@@ -82,8 +82,6 @@ export default class StatusBar extends React.Component {
   }
   goToFirst() {
     if ($(this.searchResults.current).children().length === 0) {
-      console.log('zero length', $($(this.searchResults.current)
-      .children()[0]).attr('value'));
       this.setState({ searchString: '', foundTasks: {} });
       return;
     }
