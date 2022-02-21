@@ -261,6 +261,7 @@ function load() {
 }
 
 function init() {
+  console.log('initializing', window.data);
   const newTheme = window.themes['space-night'];
   for (let key of Object.keys(newTheme)) {
     document.documentElement.style.setProperty(
