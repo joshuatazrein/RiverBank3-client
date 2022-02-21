@@ -39,6 +39,7 @@ export function backup() {
 }
 
 export function clean() {
+  return;
   // clean out tasks which aren't in lists
   for (let id of Object.keys(window.data.tasks).filter(x =>
     !['river', 'bank'].includes(x))) {

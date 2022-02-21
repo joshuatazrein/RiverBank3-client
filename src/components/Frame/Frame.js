@@ -3,6 +3,7 @@ import './Frame.css';
 import * as display from '../../services/display';
 import * as util from '../../services/util';
 import * as server from '../../services/server';
+import { save } from '../../services/edit';
 import List from '../List/List';
 import $ from 'jquery';
 
@@ -54,7 +55,10 @@ export default class Frame extends React.Component {
       title: title, subtasks: [], info: {}
     });
     subtasks.push(id);
-    this.setState({subtasks: subtasks});
+    this.setState({subtasks: subtasks}, () => {
+      save(this);
+      console.log('saved', this.state.subtasks);
+    });
     setTimeout(() => {
       this.frames[this.frames.length - 1].current.listInput.current.focus();
     }, 100);

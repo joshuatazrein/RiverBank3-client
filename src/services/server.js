@@ -47,6 +47,7 @@ export function removeTaskData(id) {
     username: window.username,
     encryptedPassword: window.password
   }).then((result) => {
+    console.trace();
     console.log('removed task data', result.data);
   }).catch((err) => {
     console.log(err);
@@ -129,5 +130,4 @@ export function initializeData() {
 
   // upload to thing
   uploadData();
-  console.log(window.data);
 }
