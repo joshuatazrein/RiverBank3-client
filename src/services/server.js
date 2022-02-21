@@ -129,4 +129,5 @@ export function initializeData() {
 
   // upload to thing
   uploadData();
+  console.log(window.data);
 }

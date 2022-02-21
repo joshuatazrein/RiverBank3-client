@@ -49,7 +49,7 @@ export default function SignIn (props) {
           window.password = response.data.encryptedPassword;
           // reset and upload fresh data
           server.initializeData();
-          confirm();
+          // confirm();
         }
       }).catch((err) => {
         console.log(err);
