@@ -9,10 +9,6 @@ Axios.get('/server/').then((response) => {
   console.log(response);
 });
 
-Axios.post('/server/posttest').then((response) => {
-  console.log(response);
-})
-
 // props has init function
 export default function SignIn (props) {
   const [username, setUsername] = useState('');

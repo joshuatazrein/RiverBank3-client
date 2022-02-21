@@ -23,13 +23,14 @@ export function restore() {
         alert('invalid JSON syntax');
         return;
       }
+      // server.testLargeUpload();
       server.uploadData();
       setTimeout(window.location.reload, 500);
     } else if (ev.key === 'Escape') {
       textarea.remove();
       setTimeout(() => window.preventReturn = false, 100);
     }
-  })
+  });
 }
 
 export function backup() {
@@ -38,31 +39,21 @@ export function backup() {
 }
 
 export function clean() {
-  function removeDeadline(list, id) {
-    for (let x of Object.keys(list)) {
-      // switch it out of things
-      let deadlineList = list[x];
-      if (deadlineList.includes(id)) {
-        deadlineList =
-          deadlineList.splice(deadlineList.findIndex(x => x === id), 1);
-      }
-    }
-  }
   // clean out tasks which aren't in lists
   for (let id of Object.keys(window.data.tasks).filter(x =>
     !['river', 'bank'].includes(x))) {
     let found = false;
     for (let containerId of Object.keys(window.data.tasks)) {
-      if (window.data.tasks[containerId].subtasks.map(x =>
-        util.stripR(x)).includes(id)) {
+      if (
+        window.data.tasks[containerId].subtasks.map(x =>
+        util.stripR(x)).includes(id)
+      ) {
         found = true;
         break;
       }
     }
     if (found === false) {
-      delete window.data.tasks[id];
-      removeDeadline(window.data.settings.deadlines, id);
-      removeDeadline(window.data.settings.startdates, id);
+      server.removeTaskData(id);
     }
   }
 
@@ -77,6 +68,9 @@ export function clean() {
     if (i == 0 || now === today) break;
   }
   if (i < dates.length - 1) {
-    window.data.tasks['river'].subtasks = dates.slice(0, i + 1);
+    server.setTaskData(
+      'river',
+      { ...window.data.tasks['river'], subtasks: dates.slice(0, i + 1) }
+    )
   }
 }

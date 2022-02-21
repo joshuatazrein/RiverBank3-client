@@ -4,6 +4,7 @@ import popSnd from '../../assets/snd/pop.mp3';
 import * as edit from '../../services/edit';
 import * as display from '../../services/display';
 import * as util from '../../services/util';
+import * as server from '../../services/server';
 import Frame from '../Frame/Frame';
 import StatusBar from '../StatusBar/StatusBar';
 import Task from '../Task/Task';
@@ -108,11 +109,7 @@ class SelectMenu extends React.Component {
             window.selected.props.parent.props.id === 'bank') {
             const confirm = window.confirm('delete this list?');
             if (confirm) {
-              const subtasks = window.selected.props.parent.state.subtasks;
-              edit.saveUndo();
-              subtasks.splice(
-                subtasks.findIndex(x => x === window.selected.props.id), 1);
-              window.selected.props.parent.setState({ subtasks: subtasks });
+              edit.deleteTask();
             }
           }
         }}>

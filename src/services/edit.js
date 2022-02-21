@@ -9,7 +9,7 @@ import Frame from '../components/Frame/Frame';
 // TODO: move to saving or somewhere else
 
 export function save(task, saveType) {
-  // save the new window.data
+  // write a task or list's state into memory
   var saveObject;
   if (saveType === 'list') {
     saveObject = task.props.parent;
@@ -20,14 +20,16 @@ export function save(task, saveType) {
   if (saveObject.subtasksCurrent) subtasks = saveObject.subtasksCurrent;
   else subtasks = saveObject.state.subtasks;
   try {
-    window.data.tasks[util.stripR(saveObject.props.id)] = {
-      title: saveObject.state.title,
-      info: saveObject.state.info, subtasks: subtasks
-    };
+    server.setTaskData(
+      util.stripR(saveObject.props.id),
+      {
+        title: saveObject.state.title,
+        info: saveObject.state.info, subtasks: subtasks
+      }
+    );
   } catch (err) {
     return;
   }
-  server.uploadTasks();
 }
 
 export function saveSetting(setting, value) {
@@ -49,8 +51,21 @@ export function undo() {
 
 export function deleteTask() {
   if (window.selected && window.selected instanceof Task) {
+
+    // delete task
     saveUndo();
     window.selected.deleteThis();
+    
+  } else if (window.selected && window.selected instanceof List) {
+
+    // remove list and tasks from current JSON file
+    saveUndo();
+    server.removeTaskData(window.selected.props.id);
+    const subtasks = window.selected.props.parent.state.subtasks;
+    subtasks.splice(
+      subtasks.findIndex(x => x === window.selected.props.id), 1);
+    window.selected.props.parent.setState({ subtasks: subtasks });
+    save(window.selected.props.parent, 'task');
   }
 }
 
@@ -61,11 +76,14 @@ export function newTask(type) {
   const today = new Date();
   const now = today.getTime();
   const newTask = String(now);
-  window.data.tasks[newTask] = {
-    info: { complete: '', startDate: '', endDate: '' },
-    title: '',
-    subtasks: [],
-  };
+  server.setTaskData(
+    newTask,
+    {
+      info: { complete: '', startDate: '', endDate: '' },
+      title: '',
+      subtasks: [],
+    }
+  );
   window.copiedTask = newTask;
   pasteTask(type);
 }
@@ -112,7 +130,10 @@ export function copyTask(mirror) {
     const today = new Date();
     const now = today.getTime();
     const newTask = String(now);
-    window.data.tasks[newTask] = { ...window.data.tasks[util.stripR(window.selected.props.id)] };
+    server.setTaskData(
+      newTask,
+      { ...window.data.tasks[util.stripR(window.selected.props.id)] }
+    );
     window.copiedTask = newTask;
   }
 }

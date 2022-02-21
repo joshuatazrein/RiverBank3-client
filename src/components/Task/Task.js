@@ -4,6 +4,7 @@ import $ from 'jquery';
 import * as display from '../../services/display';
 import * as edit from '../../services/edit';
 import * as util from '../../services/util';
+import * as server from '../../services/server';
 import TaskList from '../TaskList/TaskList';
 import List from '../List/List';
 
@@ -220,7 +221,9 @@ export default class Task extends React.Component {
       this.updateRiverDate('start', 'remove');
       this.updateRiverDate('end', 'remove');
       this.toggleRepeat('all', true);
-      delete window.data.tasks[util.stripR(this.props.id)];
+      server.removeTaskData(
+        util.stripR(this.props.id)
+      );
     }
     setTimeout(() => {
       edit.saveUndo();

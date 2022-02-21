@@ -2,6 +2,7 @@ import React from 'react';
 import './Frame.css';
 import * as display from '../../services/display';
 import * as util from '../../services/util';
+import * as server from '../../services/server';
 import List from '../List/List';
 import $ from 'jquery';
 
@@ -48,9 +49,10 @@ export default class Frame extends React.Component {
     const subtasks = this.state.subtasks;
     if (!id) id = String(new Date().getTime());
     else id = String(id);
-    window.data.tasks[id] = {
+    // create a new empty subtask and add it to this list
+    server.setTaskData(id, {
       title: title, subtasks: [], info: {}
-    }
+    });
     subtasks.push(id);
     this.setState({subtasks: subtasks});
     setTimeout(() => {
