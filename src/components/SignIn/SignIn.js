@@ -50,7 +50,8 @@ export default function SignIn (props) {
           // reset and upload fresh data
           server.initializeData();
           // waiting a bit to let data sync (should be async but meh)
-          setTimeout(confirm, 750);
+          console.log('finished');
+          confirm();
         }
       }).catch((err) => {
         console.log(err);
