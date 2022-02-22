@@ -49,7 +49,8 @@ export default function SignIn (props) {
           window.password = response.data.encryptedPassword;
           // reset and upload fresh data
           server.initializeData();
-          // confirm();
+          // waiting a bit to let data sync (should be async but meh)
+          setTimeout(confirm, 750);
         }
       }).catch((err) => {
         console.log(err);

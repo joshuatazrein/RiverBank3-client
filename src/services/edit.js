@@ -71,7 +71,10 @@ export function deleteTask() {
 
 export function newTask(type) {
   // create new task after window.selected
-  if (!window.selected || window.preventReturn) return;
+  if (!window.selected || window.preventReturn) {
+    console.log('nothing selected');
+    return;
+  }
 
   const today = new Date();
   const now = today.getTime();
