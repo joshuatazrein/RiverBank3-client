@@ -91,7 +91,7 @@ export function newTask(type) {
   pasteTask(type);
 }
 
-export function selectTask(el, force) {
+export function selectTask(el, force, focusOnTask) {
   // make this task window.selected
   if (window.preventSelect) return
   if (el instanceof TaskList) {
@@ -109,7 +109,7 @@ export function selectTask(el, force) {
     window.selected.displayOptions({ target: undefined }, 'hide');
   }
   window.selected = el;
-  if (el instanceof Task) {
+  if (el instanceof Task && focusOnTask != false) {
     el.editBar.current.focus();
   } else if (el instanceof List) {
     el.listInput.current.focus();
@@ -142,6 +142,7 @@ export function copyTask(mirror) {
 }
 
 export function pasteTask(type) {
+  console.log('paste task');
   if (!window.selected || !window.copiedTask) return;
   saveUndo();
   if (window.selected instanceof List || type === 'task') {
@@ -149,12 +150,16 @@ export function pasteTask(type) {
     subtasks.splice(0, 0, window.copiedTask);
     window.selected.setState({ subtasks: subtasks });
     save(window.selected, 'task');
+    console.log('finished pasting task');
   } else if (window.selected instanceof Task || type === 'list') {
     const subtasks = window.selected.state.parent.state.subtasks;
     const insertIndex = subtasks.findIndex(x => x === window.selected.props.id) + 1;
     subtasks.splice(insertIndex, 0, window.copiedTask);
+    console.log(window.copiedTask, subtasks, 
+      window.data.tasks[window.copiedTask]);
     window.selected.state.parent.setState({ subtasks: subtasks });
     save(window.selected, 'list');
+    console.log('finished pasting list');
   }
 }
 

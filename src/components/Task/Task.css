@@ -48,16 +48,30 @@
 }
 
 .options {
-  height: 60px;
+  height: 90px;
   width: calc(100% + 5px);
-  max-width: 250px;
+  max-width: 350px;
+  min-width: 310px;
   background-color: var(--background);
   position: absolute;
-  top: calc(100% + 5px);
+  top: calc(50% + 10px);
   left: -5px;
   z-index: 2;
   opacity: 1;
   border-radius: 5px;
+  border: 1px solid var(--border);
+  flex-direction: column;
+  justify-content: space-evenly;
+  padding: 4px;
+}
+
+.task .task .task .options {
+  left: unset;
+  right: 0;
+}
+
+.options.show {
+  display: flex;
 }
 
 .options * {
@@ -65,8 +79,16 @@
 }
 
 .options .buttonBar {
-  margin: 3px 0;
+  margin: 1px 0;
   justify-content: space-around;
+  flex-wrap: nowrap;
+}
+
+.fullWidth {
+  width: 100%;
+  justify-content: space-around;
+  flex-wrap: nowrap;
+  padding: 0 2px;
 }
 
 .options button {
@@ -104,10 +126,15 @@
   font: var(--menufont);
   font-size: 12px;
   height: 1.5em;
-  border: none;
+  border: 1px solid var(--border);
   border-radius: 6px;
   margin: 1px;
   cursor: pointer;
+  width: 1.25em;
+}
+
+.button.timeSwitch {
+  width: 3em;
 }
 
 .task .task.heading > div > textarea {
@@ -137,6 +164,14 @@
   cursor: ns-resize;
 }
 
+input.e, input.s {
+  border: 1px solid grey;
+  border-radius: 5px;
+  width: 4em;
+  height: 2em;
+  text-align: center;
+}
+
 .timeDiv > span {
   display: flex;
   flex-wrap: nowrap;
@@ -150,6 +185,14 @@
 .startSpan.end {
   color: var(--endDate);
   margin-left: 3px;
+}
+
+span.extraInfo {
+  padding: 0 2px 2px;
+  margin-left: 3px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .notesSpan {
@@ -170,8 +213,8 @@
   border: 1px solid var(--border);
   border-radius: 5px;
   flex-grow: 1;
-  width: 100%;
   height: 1.5em;
+  margin: 1px;
 }
 
 .task.event {
@@ -229,14 +272,14 @@
   width: 100%;
   display: flex;
   padding-left: calc(var(--padding));
-  justify-content: flex-end;
+  justify-content: flex-start;
   align-items: center;
 }
 
 .taskInfo * {
   margin-right: 5px;
   font: var(--menufont);
-  font-size: 10px;
+  font-size: 14px;
 }
 
 .taskInfo *:empty {
@@ -268,6 +311,10 @@ span.startDate, span.endDate {
 
 :not(.heading) .task.heading > div > textarea, .list > input {
   font-weight: var(--bold);
+}
+
+textarea.editBar {
+  line-height: 1.25em;
 }
 
 .task.collapsed .listContent {
@@ -309,4 +356,16 @@ span.startDate, span.endDate {
 .dropArea {
   height: 3px;
   border-radius: 10px;
+}
+
+label {
+  font: var(--menufont);
+  font-size: 16px;
+  padding: 1px;
+}
+
+@media only screen and (max-width: 700px) {
+  .timeDiv span {
+    font-size: 18px;
+  }
 }

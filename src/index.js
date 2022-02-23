@@ -4,16 +4,18 @@ import $ from 'jquery';
 import * as display from './services/display';
 import * as keyComms from './services/keyComms';
 import * as saving from './services/saving';
+import * as server from './services/server';
 import * as util from './services/util';
 import * as edit from './services/edit';
 import SignIn from './components/SignIn/SignIn';
 import App from './components/App/App.js';
 import './style.css';
+import { initializeData } from './services/server';
 
 window.themes = {
   'earth-day': {
     "--font": "var(--fontSize) 'Quicksand', sans-serif",
-    "--fontSize": "30px",
+    "--fontSize": "24px",
     "--fontWeight": "300",
     "--bold": "400",
     "--background": "rgb(218, 221, 216)",
@@ -36,7 +38,7 @@ window.themes = {
   },
   'earth-night': {
     "--font": "var(--fontSize) 'Quicksand', sans-serif",
-    "--fontSize": "30px",
+    "--fontSize": "24px",
     "--fontWeight": "300",
     "--bold": "400",
     "--background": "rgb(35, 38, 33)",
@@ -59,7 +61,7 @@ window.themes = {
   },
   'fire-day': {
     "--font": "var(--fontSize) 'Josefin Sans', Cochin, sans-serif",
-    "--fontSize": "30px",
+    "--fontSize": "24px",
     "--fontWeight": "100",
     "--bold": "300",
     "--background": "rgb(230, 230, 250)",
@@ -82,7 +84,7 @@ window.themes = {
   },
   'fire-night': {
     "--font": "var(--fontSize) 'Josefin Sans', Cochin, sans-serif",
-    "--fontSize": "30px",
+    "--fontSize": "24px",
     "--fontWeight": "100",
     "--bold": "300",
     "--background": "rgb(5, 5, 26)",
@@ -105,7 +107,7 @@ window.themes = {
   },
   'sky-day': {
     "--font": "var(--fontSize) 'Pilo Thin', sans-serif",
-    "--fontSize": "30px",
+    "--fontSize": "24px",
     "--fontWeight": "100",
     "--bold": "300",
     "--background": "#E4EDF1",
@@ -129,7 +131,7 @@ window.themes = {
   },
   'sky-night': {
     "--font": "var(--fontSize) 'Pilo Thin', sans-serif",
-    "--fontSize": "30px",
+    "--fontSize": "24px",
     "--fontWeight": "100",
     "--bold": "300",
     "--background": "rgb(14, 23, 27)",
@@ -152,7 +154,7 @@ window.themes = {
   },
   'space-day': {
     "--font": "var(--fontSize) 'Adam', Cochin, sans-serif",
-    "--fontSize": "30px",
+    "--fontSize": "24px",
     "--fontWeight": "300",
     "--background": "rgb(201, 192, 187)",
     "--border": "rgba(128, 128, 128, 0.3)",
@@ -175,7 +177,7 @@ window.themes = {
   },
   'space-night': {
     "--font": "var(--fontSize) 'Adam', sans-serif",
-    "--fontSize": "30px",
+    "--fontSize": "24px",
     "--fontWeight": "300",
     "--background": "rgb(0, 0, 0)",
     "--border": "rgb(128, 128, 128, 0.3)",
@@ -199,7 +201,7 @@ window.themes = {
   },
   'water-day': {
     "--font": "var(--fontSize) 'Kirvy', sans-serif",
-    "--fontSize": "30px",
+    "--fontSize": "24px",
     "--fontWeight": "100",
     "--background": "rgb(188, 212, 230)",
     "--border": "rgba(36, 40, 43, 0.3)",
@@ -223,7 +225,7 @@ window.themes = {
   },
   'water-night': {
     "--font": "var(--fontSize) 'Kirvy', sans-serif",
-    "--fontSize": "30px",
+    "--fontSize": "24px",
     "--fontWeight": "100",
     "--background": "rgb(31, 40, 52)",
     "--border": "rgba(176, 194, 212, 0.3)",
@@ -248,19 +250,26 @@ window.themes = {
 }
 
 function load() {
-  const newTheme = window.themes['space-night'];
-  for (let key of Object.keys(newTheme)) {
-    document.documentElement.style.setProperty(
-      key, newTheme[key]
+  if (window.location.href.includes('localhost')) {
+    window.mode = 'offline';
+  }
+  display.setTheme('space', 'night');
+  if (window.mode === 'offline') {
+    server.initializeData();
+    // init();
+    ReactDOM.render(
+      <SignIn init={init} />, 
+      document.getElementById('root')
+    );
+  } else {
+    ReactDOM.render(
+      <SignIn init={init} />, 
+      document.getElementById('root')
     );
   }
-  ReactDOM.render(
-    <SignIn init={init} />, 
-    document.getElementById('root')
-  );
 }
 
-function init() {
+export function init() {
   console.log('initializing', window.data);
   const newTheme = window.themes['space-night'];
   for (let key of Object.keys(newTheme)) {

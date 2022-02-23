@@ -130,7 +130,7 @@ export default class List extends React.Component {
   }
   render() {
     var selectThis = () => {
-      edit.selectTask(this);
+      edit.selectTask(this, null, false);
     }
     this.changeTitle = this.changeTitle.bind(this);
     this.listInput = React.createRef();

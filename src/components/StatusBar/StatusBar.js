@@ -29,8 +29,15 @@ export default class StatusBar extends React.Component {
     this.setState({ foundTasks: this.searches });
   }
   goToSearch(id) {
+    console.log('preventReturn');
     window.preventReturn = true;
     window.preventSelect = true;
+    // go through IDs and find the trace paths
+    setTimeout(() => {
+      console.log('preventReturn fixed');
+      window.preventReturn = false;
+      window.preventSelect = false;
+    }, 150);
     var idList = [id];
     function buildParents(otherId) {
       for (let x of Object.keys(window.data.tasks)) {
@@ -44,7 +51,6 @@ export default class StatusBar extends React.Component {
     buildParents(id);
     if (!window.app.current.state[idList[0]]) {
       console.log('no search found for', idList);
-      window.preventReturn = false;
       return;
     }
     const frame = window.app.current.state[idList[0]].current;
@@ -75,11 +81,6 @@ export default class StatusBar extends React.Component {
       }
       window.preventSelect = false;
       edit.selectTask(foundTask);
-      
-      // go through IDs and find the trace paths
-      setTimeout(() => {
-        window.preventReturn = false;
-      }, 100);
     }, 100);
   }
   componentDidMount() {
@@ -292,8 +293,8 @@ export default class StatusBar extends React.Component {
               </option>
             ))}
           </select>
+          <span className='tutorialLink' onClick={this.tutorial}>help</span>
         </div>
-        <span className='tutorialLink' onClick={this.tutorial}>help</span>
       </div>
       {this.state.tutorial && 
         <div className='tutorial tutorialShow'>

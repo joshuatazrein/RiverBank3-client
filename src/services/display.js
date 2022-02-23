@@ -126,17 +126,30 @@ export function updateAllSizes() {
   }
 }
 
-export function setTheme(theme) {
-  const newTheme = window.themes[theme + '-' +
-    window.data.settings.mode];
+export function setTheme(theme, mode) {
+  if (!mode) mode = window.data.settings.mode;
+  const newTheme = window.themes[theme + '-' + mode];
   for (let key of Object.keys(newTheme)) {
     document.documentElement.style.setProperty(
       key, newTheme[key]
     );
   }
-  window.data.settings.theme = theme;
-  server.uploadSettings();
-  setTimeout(updateAllSizes, 100);
+  if (window.innerWidth < 700) {
+    const mobileStyles = {
+      '--fontSize': '20px',
+      '--padding': '28px',
+    }
+    for (let key of Object.keys(mobileStyles)) {
+      document.documentElement.style.setProperty(
+        key, mobileStyles[key]
+      );
+    }
+  }
+  if (window.mode != 'offline') {
+    window.data.settings.theme = theme;
+    server.uploadSettings();
+    setTimeout(updateAllSizes, 100);
+  }
 }
 
 export function displayTable() {

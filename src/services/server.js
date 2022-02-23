@@ -6,6 +6,12 @@ export function setTaskData(id, value) {
 
   // set the task & upload to mySQL
   window.data.tasks[id] = value;
+
+  if (window.mode === 'offline') {
+    localStorage.setItem('data', window.data);
+    return;
+  }
+  
   Axios.post('/server/settaskdata', {
     id: id,
     value: value,
@@ -21,6 +27,11 @@ export function setTaskData(id, value) {
 
 // remove task from window.data and mirror that on the server
 export function removeTaskData(id) {
+
+  if (window.mode === 'offline') {
+    localStorage.setItem('data', window.data);
+    return;
+  }
 
   // abort if it's already gone
   if (!window.data.tasks[id]) return;
@@ -61,6 +72,11 @@ export function removeTaskData(id) {
 
 export function uploadSettings() {
 
+  if (window.mode === 'offline') {
+    localStorage.setItem('data', window.data);
+    return;
+  }
+
   // upload settings to mySQL
   console.log('uploading settings...');
   Axios.post('/server/uploadsettings', {
@@ -78,6 +94,11 @@ export function uploadTasks() {
 
   // upload all tasks
   console.log('uploading tasks...', window.password, window.username, window.data.tasks);
+
+  if (window.mode === 'offline') {
+    localStorage.setItem('data', window.data);
+    return;
+  }
 
   // wipe all tasks
   Axios.post('/server/uploadtasks', {

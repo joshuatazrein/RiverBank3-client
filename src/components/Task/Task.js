@@ -16,7 +16,7 @@ export default class Task extends React.Component {
       subtasks: props.subtasks.filter(x =>
         window.data.tasks[util.stripR(x)]), parent: props.parent,
       id: props.id, displayOptions: 'hide', riverTask: false,
-      zoomed: '', minHeight: 1
+      zoomed: '', minHeight: 1, triggeredInputs: '',
     };
     // TODO
     if (!this.state.info.startDate) this.state.info.startDate = ['--', '--'];
@@ -37,25 +37,73 @@ export default class Task extends React.Component {
     edit.save(this);
     if (this.freeze === true) return;
     if (window.selected !== this) {
-      edit.selectTask(this);
-    }
-    if (this.editBar.current) {
-      this.editBar.current.focus();
+      edit.selectTask(this, null, false);
     }
     if ($(ev.target).hasClass('options') ||
       $(ev.target).parent().hasClass('options')) {
       return
     }
-    if (showHide === 'hide' || this.state.displayOptions === 'show') {
-      this.setState({ displayOptions: 'hide' });
+    const evaluate = (startOrEndDate) => {
       if (
-        this.props.parent instanceof List && 
+        startOrEndDate.includes('--') ||
+        startOrEndDate.includes('')
+      ) {
+        return ['--', '--'];
+      }
+      let fail = false;
+      if (this.state.info.type === 'event') {
+        const first = startOrEndDate[0];
+        if (first > 24 || first < 0) {
+          fail = true;
+        } 
+        const second = startOrEndDate[0];
+        if (second > 60 || second < 0) {
+          fail = true;
+        }
+      } else if (this.state.info.type === 'date') {
+        const first = startOrEndDate[0];
+        if (first > 12 || first < 0) {
+          fail = true;
+        } 
+        const second = startOrEndDate[0];
+        if (second > 31 || second < 0) {
+          fail = true;
+        }
+      }
+      if (fail === true) {
+        return ['--', '--']
+      } else {
+        return startOrEndDate;
+      }
+    }
+    if (showHide === 'hide' || this.state.displayOptions === 'show') {
+      if (this.editBar.current && window.innerWidth > 700) {
+        this.editBar.current.focus();
+      }
+      this.setState({ 
+        displayOptions: 'hide',
+        triggeredInputs: '',
+        info: {...this.state.info,
+          startDate: evaluate(this.state.info.startDate),
+          endDate: evaluate(this.state.info.endDate),
+        }
+      });
+      if (
+        this.props.parent instanceof List &&
         util.getFrame(this).props.id === 'river'
       ) {
         this.props.parent.forceUpdate();
       }
     } else if (showHide === 'show' || this.state.displayOptions === 'hide') {
-      this.setState({ displayOptions: 'show' });
+        $(':focus').blur();
+      this.setState({
+        displayOptions: 'show',
+        triggeredInputs: '',
+        info: {...this.state.info,
+          startDate: evaluate(this.state.info.startDate),
+          endDate: evaluate(this.state.info.endDate),
+        }
+      }, () => console.log(this.state.triggeredInputs));
     }
   }
   changeTitle(ev) {
@@ -110,7 +158,7 @@ export default class Task extends React.Component {
   }
   toggleComplete(change) {
     let status = this.state.info.complete
-    if (status === 'complete') { 
+    if (status === 'complete') {
       status = '';
       if (this.state.info.type === 'date') {
         this.updateRiverDate('start', 'add');
@@ -294,24 +342,87 @@ export default class Task extends React.Component {
     });
     edit.saveSetting('repeats', repeats);
   }
+
+  // typing into event
+  timeType = (ev, unit, type) => {
+    const newState = ev.target.value;
+    console.log(ev);
+    if (ev.key === 'Enter') {
+      this.setState({
+        triggeredInputs: ''
+      });
+      return;
+    }
+    if (type === 'start' && unit === 's') {
+      this.setState({
+        info: {
+          ...this.state.info, 
+          startDate: [newState, this.state.info.startDate[1]]
+        }
+      })
+    } else if (type === 'start' && unit === 'e') {
+      this.setState({
+        info: {
+          ...this.state.info, 
+          startDate: [this.state.info.startDate[0], newState]
+        }
+      })
+    } else if (type === 'end' && unit === 's') {
+      this.setState({
+        info: {
+          ...this.state.info, 
+          endDate: [newState, this.state.info.endDate[1]]
+        }
+      })
+    } else if (type === 'end' && unit === 'e') {
+      this.setState({
+        info: {
+          ...this.state.info, 
+          endDate: [this.state.info.endDate[0], newState]
+        }
+      })
+    }
+  }
+
+  // dragging into event
   timeDrag = (ev, unit, type) => {
+    var dragged = false; // setting up condition for mouseup entry input
     var mouseup = () => {
-      window.removeEventListener('mousemove', changeTime);
-      window.app.current.setState({ disableSelect: '' });
-      if (unit === 'e' || this.state.info.type === 'event') {
-        this.displayOptions('hide');
-      } else if (unit === 's') {
-        this.setState({ displayOptions: 'show' });
-      } 
-      this.freeze = true;
-      setTimeout(() => this.freeze = false, 200);
-      window.removeEventListener('mouseup', mouseup);
-      this.props.parent.forceUpdate();
+
+      // end drag
+      if (dragged === true || $(ev.target).hasClass('infoStartDate')) {
+        window.removeEventListener('mousemove', changeTime);
+        window.app.current.setState({ disableSelect: '' });
+        if (unit === 'e' || this.state.info.type === 'event') {
+          this.displayOptions('hide');
+        } else if (unit === 's') {
+          this.setState({ displayOptions: 'show' });
+        }
+        this.freeze = true;
+        setTimeout(() => this.freeze = false, 200);
+        window.removeEventListener('mouseup', mouseup);
+        this.props.parent.forceUpdate();
+      } else {
+
+        // trigger typing input
+        console.log('this works', unit, type);
+        window.removeEventListener('mousemove', changeTime);
+        this.setState({
+          disableSelect: '',
+          displayOptions: 'show',
+          triggeredInputs: `${type}-${unit}`,
+        });
+        setTimeout(() => this.freeze = false, 200);
+        window.removeEventListener('mouseup', mouseup);
+        this.props.parent.forceUpdate();
+      }
     }
     window.addEventListener('mouseup', mouseup);
     var change = 10;
     var pageY = ev.screenY;
     var updateTime = (ev2, value, unit) => {
+      window.app.current.setState({ disableSelect: 'disable-select' });
+      dragged = true;
       let val;
       let date;
       let infoOrig;
@@ -491,9 +602,28 @@ export default class Task extends React.Component {
         updateTime(ev, changeTime, unit);
       }
     }
-    window.app.current.setState({ disableSelect: 'disable-select' });
     window.addEventListener('mousemove', changeTime);
   }
+
+  switchAmPm = () => {
+    // switch Am and Pm
+    if (this.state.info.startDate.includes('--')) return;
+    if (this.state.info.startDate[0] < 12) {
+      let [start, end] = this.state.info.startDate;
+      console.log(start);
+      start = Number(start) + 12;
+      this.setState({
+        info: {...this.state.info, startDate: [start, end]}
+      });
+    } else {
+      let startDate = this.state.info.startDate;
+      startDate[0] -= 12;
+      this.setState({
+        info: {...this.state.info, startDate: startDate}
+      });
+    }
+  }
+
   isComplete = () => {
     let completed = this.state.info.complete;
     let parent = this.props.parent;
@@ -576,8 +706,8 @@ export default class Task extends React.Component {
     if (this.state.info.type === 'event') {
       // am/pm
       if (!this.state.info.startDate.includes('--')) {
-        if (this.state.info.startDate[0] >= 12) startExtra = 'p';
-        else startExtra = 'a';
+        if (this.state.info.startDate[0] >= 12) startExtra = 'pm';
+        else startExtra = 'am';
       }
     }
     else {
@@ -597,7 +727,7 @@ export default class Task extends React.Component {
       if (!this.state.info.endDate.includes('--')) {
         endExtra = getWeekday(this.state.info.endDate);
       }
-    } 
+    }
     const openDrag = (ev) => {
       $(container.current).attr('draggable', 'true');
     }
@@ -620,197 +750,313 @@ export default class Task extends React.Component {
     const container = React.createRef();
     return (
       <>
-      <li className={'task ' + this.state.info.important +
-        ' ' + completed +
-        ' ' + this.state.info.maybe +
-        ' ' + headingClass +
-        ' ' + this.state.info.type +
-        ' ' + this.state.info.collapsed +
-        ' ' + this.state.zoomed}
-        onClick={() => { edit.selectTask(this) }} 
-        onContextMenu={() => edit.selectTask(this) }
-        style={{minHeight: this.state.minHeight * 1.15 * 30}}
-        onDragOver={dragOver}
-      >
-        <textarea className='infoArea' 
-        ref={this.infoArea}
-        onKeyDown={(ev) => {
-          if (ev.key === 'Escape') {
-            $(this.infoArea.current).hide();
-            setTimeout(() => window.preventReturn = false, 100);
-          }
-        }}
-        onChange={() => {
-          this.setState({
-            info: {
-              ...this.state.info,
-              notes: this.infoArea.current.value
+        <li className={'task ' + this.state.info.important +
+          ' ' + completed +
+          ' ' + this.state.info.maybe +
+          ' ' + headingClass +
+          ' ' + this.state.info.type +
+          ' ' + this.state.info.collapsed +
+          ' ' + this.state.zoomed}
+          onClick={(ev) => { 
+            if ($(ev.target).hasClass('info')) {
+              console.log('selecting wihtout focus');
+              edit.selectTask(this, null, false);
+            } else {
+              edit.selectTask(this);
             }
-          })
-        }}
-        value={this.state.info.notes}
-        ></textarea>
-        <div className='taskContent' ref={container}
-          onDragStart={startDrag}>
-          <div className={'options ' + this.state.displayOptions}>
-            <div className='buttonBar' style={{
-              width: '100%',
-              justifyContent: 'space-around',
-              flexWrap: 'nowrap',
-            }}>
-              <div className='buttonBar'>
-                <button
-                  title='toggle complete'
-                  className={'button ' + this.state.info.complete}
-                  onClick={this.toggleComplete}>
-                  √</button>
-                <button
-                  title='toggle important'
-                  className={'button ' + this.state.info.important}
-                  onClick={this.toggleImportant}>
-                  !</button>
-                <button
-                  title='toggle maybe'
-                  className={'button ' + this.state.info.maybe}
-                  onClick={this.toggleMaybe}>
-                  ?</button>
-                <button
-                  title='toggle fold'
-                  className={'button'}
-                  onClick={() => this.toggleCollapse()}>
-                  {'[]'}</button>
+          }}
+          onContextMenu={() => edit.selectTask(this)}
+          style={{ minHeight: this.state.minHeight * 1.15 * 30 }}
+          onDragOver={dragOver}
+        >
+          <textarea className='infoArea'
+            ref={this.infoArea}
+            onKeyDown={(ev) => {
+              if (ev.key === 'Escape') {
+                $(this.infoArea.current).hide();
+                setTimeout(() => window.preventReturn = false, 100);
+              }
+            }}
+            onChange={() => {
+              this.setState({
+                info: {
+                  ...this.state.info,
+                  notes: this.infoArea.current.value
+                }
+              })
+            }}
+            value={this.state.info.notes}
+          ></textarea>
+          <div className='taskContent' ref={container}
+            onDragStart={startDrag}>
+            <div className={'options ' + this.state.displayOptions}
+              onClick={(ev) => {
+                if (
+                  !$(ev.target).hasClass('e') &&
+                  !$(ev.target).hasClass('s')
+                ) {
+                  this.setState({
+                    triggeredInputs: ''
+                  });
+                }
+              }}>
+              <div className='buttonBar fullWidth'>
+                <div className='buttonBar'>
+                  <label>status:</label>
+                  <button
+                    title='toggle complete'
+                    className={'button ' + this.state.info.complete}
+                    onClick={this.toggleComplete}>
+                    √</button>
+                  <button
+                    title='toggle important'
+                    className={'button ' + this.state.info.important}
+                    onClick={this.toggleImportant}>
+                    !</button>
+                  <button
+                    title='toggle maybe'
+                    className={'button ' + this.state.info.maybe}
+                    onClick={this.toggleMaybe}>
+                    ?</button>
+                  <button
+                    title='toggle fold'
+                    className={'button'}
+                    onClick={() => this.toggleCollapse()}>
+                    {'[]'}</button>
+                </div>
+                <div className='buttonBar'>
+                  <label>repeat:</label>
+                  <button className={'button ' + repeatsOn['Mon']}
+                    onClick={() => { 
+                      this.toggleRepeat('Mon'); 
+                    }}>M</button>
+                  <button className={'button ' + repeatsOn['Tue']}
+                    onClick={() => {
+                      this.toggleRepeat('Tue');
+                    }}>T</button>
+                  <button className={'button ' + repeatsOn['Wed']}
+                    onClick={() => {
+                      this.toggleRepeat('Wed');
+                    }}>W</button>
+                  <button className={'button ' + repeatsOn['Thu']}
+                    onClick={() => {
+                      this.toggleRepeat('Thu');
+                    }}>R</button>
+                  <button className={'button ' + repeatsOn['Fri']}
+                    onClick={() => {
+                      this.toggleRepeat('Fri');
+                    }}>F</button>
+                  <button className={'button ' + repeatsOn['Sat']}
+                    onClick={() => {
+                      this.toggleRepeat('Sat');
+                    }}>S</button>
+                  <button className={'button ' + repeatsOn['Sun']}
+                    onClick={() => {
+                      this.toggleRepeat('Sun');
+                    }}>U</button>
+                </div>
               </div>
-              <div className='buttonBar'>
-                <button className={'button ' + repeatsOn['Mon']}
-                  onClick={() => { this.toggleRepeat('Mon'); }}>M</button>
-                <button className={'button ' + repeatsOn['Tue']}
-                  onClick={() => {
-                    this.toggleRepeat('Tue');
-                  }}>T</button>
-                <button className={'button ' + repeatsOn['Wed']}
-                  onClick={() => {
-                    this.toggleRepeat('Wed');
-                  }}>W</button>
-                <button className={'button ' + repeatsOn['Thu']}
-                  onClick={() => {
-                    this.toggleRepeat('Thu');
-                  }}>R</button>
-                <button className={'button ' + repeatsOn['Fri']}
-                  onClick={() => {
-                    this.toggleRepeat('Fri');
-                  }}>F</button>
-                <button className={'button ' + repeatsOn['Sat']}
-                  onClick={() => {
-                    this.toggleRepeat('Sat');
-                  }}>S</button>
-                <button className={'button ' + repeatsOn['Sun']}
-                  onClick={() => {
-                    this.toggleRepeat('Sun');
-                  }}>U</button>
-              </div>
-            </div>
-              <div className='timeDiv buttonBar' style={{
+              <div className='timeDiv buttonBar fullWidth' style={{
                 flexWrap: 'nowrap',
               }}>
-                <button className='button timeSwitch'
-                  onClick={() => {
-                    var changeValue = this.state.info.type === 'event' ?
-                      'date' : 'event';
-                    this.setState({
-                      info: {
-                        ...this.state.info,
-                        type: changeValue,
-                        startDate: ['--', '--'],
-                        endDate: ['--', '--'],
-                      }
-                    })
-                  }}>
-                  {this.state.info.type}
-                </button>
-                <span className='startSpan start'>
-                  <span className='s' onMouseDown={(ev) => {
-                    this.timeDrag(ev, 's', 'start');
-                  }}>{
-                    this.state.info.type === 'event' ?
-                      amPmFormat(this.state.info.startDate[0]) :
-                      this.state.info.startDate[0]
-                  }</span>
-                  <span className='m'>{
-                    this.state.info.type === 'event' ? ':' : '/'
-                  }</span>
-                  <span 
-                    className='e' 
-                    onMouseDown={(ev) => {
-                      this.timeDrag(ev, 'e', 'start');
-                    }}
-                  >
-                    {this.state.info.type === 'event' ?
-                      String(this.state.info.startDate[1]).padStart(2, 0) :
-                      this.state.info.startDate[1]
+                <div class='buttonBar'>
+                  <label>type:</label>
+                  <button className='button timeSwitch'
+                    onClick={() => {
+                      var changeValue = this.state.info.type === 'event' ?
+                        'date' : 'event';
+                      this.setState({
+                        info: {
+                          ...this.state.info,
+                          type: changeValue,
+                          startDate: ['--', '--'],
+                          endDate: ['--', '--'],
+                        }
+                      })
+                    }}>
+                    {this.state.info.type}
+                  </button>
+                </div>
+                <div class='buttonBar'>
+                  <label>{
+                    this.state.info.type === 'event' ? 'time:' : 'start:'
+                  }</label>
+                  <span className='startSpan start'>
+                    {this.state.triggeredInputs === 'start-s' ?
+                      <input autoFocus className='s' onChange={(ev) =>
+                        this.timeType(ev, 's', 'start')
+                      } 
+                      value={
+                        this.state.info.type === 'event' ?
+                          amPmFormat(this.state.info.startDate[0]) :
+                          this.state.info.startDate[0]
+                      } 
+                      type='number'
+                      min='0' 
+                      max='12'
+                      ></input> :
+                      <span className='s' onMouseDown={(ev) => {
+                        this.timeDrag(ev, 's', 'start');
+                      }}>{
+                          this.state.info.type === 'event' ?
+                            amPmFormat(this.state.info.startDate[0]) :
+                            this.state.info.startDate[0]
+                        }
+                      </span>
                     }
+                    <span className='m'>{
+                      this.state.info.type === 'event' ? ':' : '/'
+                    }</span>
+                    {this.state.triggeredInputs === 'start-e' ?
+                      <input 
+                        autoFocus 
+                        className='e' onChange={(ev) =>
+                          this.timeType(ev, 'e', 'start')
+                        } 
+                        value={this.state.info.startDate[1]}
+                        type='number'
+                        min='0' 
+                        max={
+                          this.state.info.type === 'event' ? '60' : '31'
+                        }
+                        step={
+                          this.state.info.type === 'event' ? '5' : '1'
+                        }
+                      ></input> :
+                      <span
+                        className='e'
+                        onMouseDown={(ev) => {
+                          this.timeDrag(ev, 'e', 'start');
+                        }}
+                      >
+                        {this.state.info.type === 'event' ?
+                          String(this.state.info.startDate[1]).padStart(2, 0) :
+                          this.state.info.startDate[1]
+                        }
+                      </span>
+                    }
+                    {startExtra &&
+                      <span 
+                        className='startSpan extraInfo'
+                        onClick={this.switchAmPm}
+                      >
+                        {startExtra}
+                      </span>}
                   </span>
-                  {startExtra && 
-                  <span className='startSpan extraInfo'>
-                    {startExtra}
-                  </span>}
-                </span>
-                <span className='startSpan end'>
-                  <span className='s' onMouseDown={(ev) => {
-                    this.timeDrag(ev, 's', 'end');
-                  }}>{this.state.info.endDate[0]}</span>
-                  <span className='m'>{
-                    this.state.info.type === 'event' ? 'h' : '/'
-                  }</span>
-                  <span className='e' onMouseDown={(ev) => {
-                    this.timeDrag(ev, 'e', 'end');
-                  }}>{this.state.info.endDate[1]}</span>
-                  <span>{this.state.info.type === 'event' ?
-                    'm' : ''}</span>
-                  {endExtra && 
-                  <span className='startSpan extraInfo'>
-                    {endExtra}
-                  </span>}
-                </span>
-                <input ref={this.infoInput} className='infoSpan' placeholder='notes'
-                  style={{ marginLeft: '5px' }}
-                  value={this.state.info.notes}
-                  onChange={() => {
-                    this.setState({
-                      info: {
-                        ...this.state.info,
-                        notes: this.infoInput.current.value
-                      }
-                    })
-                  }}></input>
-                <button className='button' onClick={() => {
-                  $(this.infoArea.current).show();
-                  window.preventReturn = true;
-                }} title='expand notes to paragraph'>+</button>
+                </div>
+                <div class='buttonBar'>
+                  <label>{
+                    this.state.info.type === 'event' ? 'length:' : 'deadline:'
+                  }</label>
+                  <span className='startSpan end'>
+                    {this.state.triggeredInputs === 'end-s' ?
+                      <input 
+                        autoFocus className='s' onChange={(ev) =>
+                          this.timeType(ev, 's', 'end')
+                        } 
+                        value={this.state.info.endDate[0] == '--' ? '' :
+                          this.state.info.endDate[0]} 
+                        type='number'
+                        min='0' 
+                        max={
+                          this.state.info.type === 'event' ? '24' : '12'
+                        }
+                      ></input> :
+                      <span className='s' onMouseDown={(ev) => {
+                        this.timeDrag(ev, 's', 'end');
+                      }}>{this.state.info.endDate[0]}</span>
+                    }
+                    <span className='m'>{
+                      this.state.info.type === 'event' ? 'h' : '/'
+                    }</span>
+                    {this.state.triggeredInputs === 'end-e' ?
+                      <input 
+                        autoFocus className='s' onChange={(ev) =>
+                          this.timeType(ev, 'e', 'end')
+                        } 
+                        value={this.state.info.endDate[1] === '--' ? '' :
+                          this.state.info.endDate[1]
+                        } 
+                        type='number'
+                        min='0' 
+                        max={
+                          this.state.info.type === 'event' ? '24' : '12'
+                        }
+                      ></input> :
+                      <span className='e' onMouseDown={(ev) => 
+                        this.timeDrag(ev, 'e', 'end')
+                      }>{this.state.info.endDate[1]}</span>
+                    }
+                    <span>{this.state.info.type === 'event' ?
+                        'm' : ''}</span>
+                    {endExtra &&
+                      <span className='startSpan extraInfo'>
+                        {endExtra}
+                      </span>}
+                  </span>
+                </div>
               </div>
-          </div>
-          {!hasTimes ? 
-            <span className='info'
-              onClick={(ev) => this.displayOptions(ev)}
-              ref={this.optionsButton}
-              onMouseDown={openDrag}
-              onMouseUp={closeDrag}>
-            </span> :
-            <span className='startDate'
-              onClick={(ev) => this.displayOptions(ev)}
-              ref={this.optionsButton}
-              onMouseDown={(ev) => {
-                this.timeDrag(ev, 's', 'start')
+              <div class='buttonBar fullWidth'> {/* third row */ }
+                  <input ref={this.infoInput} className='infoSpan' placeholder='notes'
+                    value={this.state.info.notes}
+                    onChange={() => {
+                      this.setState({
+                        info: {
+                          ...this.state.info,
+                          notes: this.infoInput.current.value
+                        }
+                      })
+                    }}></input>
+                  <button className='button' onClick={() => {
+                    $(this.infoArea.current).show();
+                    console.log('preventReturn');
+                    window.preventReturn = true;
+                  }} title='expand notes to paragraph'>+</button>
+                </div>
+            </div>
+            {!hasTimes ?
+              <span className='info'
+                onClick={(ev) => this.displayOptions(ev)}
+                ref={this.optionsButton}
+                onMouseDown={openDrag}
+                onMouseUp={closeDrag}>
+              </span> :
+              <span className='startDate infoStartDate'
+                onClick={(ev) => this.displayOptions(ev)}
+                ref={this.optionsButton}
+                onMouseDown={(ev) => {
+                  this.timeDrag(ev, 's', 'start')
+                }}>
+                {this.dateRender('start')}
+              </span>}
+            <textarea className='editBar' value={this.state.title}
+              onChange={(ev) => this.changeTitle(ev)} ref={this.editBar}
+              spellCheck='false' onClick={(ev) => this.displayOptions(ev, 'hide')}></textarea>
+            {this.state.info.notes.length === 0 &&
+              <div style={{
+                display: 'flex', flexDirection: 'column',
+                marginRight: '5px'
               }}>
-              {this.dateRender('start')}
-            </span>}
-          <textarea className='editBar' value={this.state.title}
-            onChange={(ev) => this.changeTitle(ev)} ref={this.editBar}
-            spellCheck='false' onClick={(ev) => this.displayOptions(ev, 'hide')}></textarea>
-          {this.state.info.notes.length === 0 &&
-            <div style={{
-              display: 'flex', flexDirection: 'column',
-              marginRight: '5px'
-            }}>
+                {!hasTimes &&
+                  !this.state.info.startDate.includes('--') &&
+                  <span className='startDate'>
+                    {this.dateRender('start')}
+                  </span>}
+                {!this.state.info.endDate.includes('--') &&
+                  <span className='endDate'>
+                    {this.dateRender('end')}
+                  </span>}
+              </div>
+            }
+          </div>
+          {this.state.info.notes.length > 0 &&
+            <div className='taskInfo'>
+              {this.state.info.notes.length > 0 &&
+                <span className='notesSpan'>
+                  {this.state.info.notes.length > 50 ?
+                    this.state.info.notes.slice(0, 50) + '...' :
+                    this.state.info.notes}
+                </span>}
               {!hasTimes &&
                 !this.state.info.startDate.includes('--') &&
                 <span className='startDate'>
@@ -820,53 +1066,33 @@ export default class Task extends React.Component {
                 <span className='endDate'>
                   {this.dateRender('end')}
                 </span>}
-            </div>
-          }
-        </div>
-        {this.state.info.notes.length > 0 &&
-        <div className='taskInfo'>
-          {this.state.info.notes.length > 0 &&
-            <span className='notesSpan'>
-              {this.state.info.notes.length > 50 ?
-                this.state.info.notes.slice(0, 50) + '...' :
-                this.state.info.notes}
-            </span>}
-          {!hasTimes &&
-            !this.state.info.startDate.includes('--') &&
-            <span className='startDate'>
-              {this.dateRender('start')}
-            </span>}
-          {!this.state.info.endDate.includes('--') &&
-            <span className='endDate'>
-              {this.dateRender('end')}
-            </span>}
-        </div>}
-        <div 
-          className={`dropArea ${this.state.subtaskDrop ? 'droppable' : ''}`}
+            </div>}
+          <div
+            className={`dropArea ${this.state.subtaskDrop ? 'droppable' : ''}`}
+            onDragEnter={() => {
+              if (window.draggedTask.props.id === this.props.id) return;
+              this.setState({ subtaskDrop: true })
+            }}
+            onDragLeave={() => this.setState({ subtaskDrop: false })}
+            onDrop={(ev) => this.dropTask(ev, 'subtask')}
+          ></div>
+          <TaskList
+            ref={this.taskList}
+            subtasks={this.state.subtasks}
+            parent={this}
+          />
+        </li>
+        <div
+          className={`dropArea ${this.state.taskDrop ? 'droppable' : ''}
+          ${completed}`}
           onDragEnter={() => {
             if (window.draggedTask.props.id === this.props.id) return;
-            this.setState({subtaskDrop: true})
+            this.setState({ taskDrop: true })
           }}
-          onDragLeave={() => this.setState({subtaskDrop: false})}
-          onDrop={(ev) => this.dropTask(ev, 'subtask')}
+          onDragLeave={() => this.setState({ taskDrop: false })}
+          onDrop={(ev) => this.dropTask(ev, 'task')}
+          onDragOver={dragOver}
         ></div>
-        <TaskList 
-          ref={this.taskList} 
-          subtasks={this.state.subtasks}
-          parent={this} 
-        />
-      </li>
-      <div 
-        className={`dropArea ${this.state.taskDrop ? 'droppable' : ''}
-          ${completed}`}
-        onDragEnter={() => {
-          if (window.draggedTask.props.id === this.props.id) return;
-          this.setState({taskDrop: true})
-        }}
-        onDragLeave={() => this.setState({taskDrop: false})}
-        onDrop={(ev) => this.dropTask(ev, 'task')}
-        onDragOver={dragOver}
-      ></div>
       </>
     )
   }
