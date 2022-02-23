@@ -253,7 +253,7 @@ function load() {
   if (window.location.href.includes('localhost')) {
     window.mode = 'offline';
   }
-  display.setTheme('space', 'night');
+  display.setTheme('space', 'night', true);
   if (window.mode === 'offline') {
     server.initializeData();
     // init();

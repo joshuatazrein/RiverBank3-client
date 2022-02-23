@@ -75,6 +75,9 @@ export function newTask(type) {
     console.log('nothing selected');
     return;
   }
+  if (window.selected instanceof Task) {
+    window.selected.displayOptions(null, 'hide');
+  }
 
   const today = new Date();
   const now = today.getTime();
@@ -200,6 +203,15 @@ export function indentTask(unindent) {
     lastSelected.props.parent.setState({ subtasks: parentSubtasks });
     save(lastSelected.props.parent);
   }
+}
+
+export function searchMove() {
+  cutTask();
+  const where = prompt('type task to move to:');
+  const statusBar = window.app.current.statusBar.current;
+  statusBar.search({target: {value: where}});
+  setTimeout(statusBar.goToFirst, 250);
+  setTimeout(() => pasteTask('list'), 500);
 }
 
 export function moveTask(direction) {

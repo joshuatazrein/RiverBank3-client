@@ -126,8 +126,10 @@ export function updateAllSizes() {
   }
 }
 
-export function setTheme(theme, mode) {
-  if (!mode) mode = window.data.settings.mode;
+export function setTheme(theme, mode, offline) {
+  if (offline != true) {
+    mode = mode || window.data.settings.mode;
+  }
   const newTheme = window.themes[theme + '-' + mode];
   for (let key of Object.keys(newTheme)) {
     document.documentElement.style.setProperty(
@@ -145,7 +147,7 @@ export function setTheme(theme, mode) {
       );
     }
   }
-  if (window.mode != 'offline') {
+  if (window.mode != 'offline' && offline != true) {
     window.data.settings.theme = theme;
     server.uploadSettings();
     setTimeout(updateAllSizes, 100);

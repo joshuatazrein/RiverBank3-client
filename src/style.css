@@ -163,11 +163,15 @@ ul {
 
 @media (max-width: 700px) {
   #root {
-    padding-top: 40px;
+    padding-top: 50px;
     padding-bottom: 30px;
   }
 
   .monthYear {
-    top: calc(50% + 38px);
+    top: calc(50% + 53px);
+  }
+
+  .buttonBar.nowrap {
+    flex-wrap: wrap;
   }
 }

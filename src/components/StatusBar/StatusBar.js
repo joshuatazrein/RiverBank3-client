@@ -17,19 +17,21 @@ export default class StatusBar extends React.Component {
     if (this.state.searchString === '') {
       this.searches = { ...window.data.tasks };
     }
-    this.setState({ searchString: ev.target.value });
-    for (let x of Object.keys(this.searches)) {
-      if (!new RegExp(this.state.searchString, 'i').test(
-        this.searches[x].title) ||
-        this.searches[x].info.complete === 'complete') {
-        delete this.searches[x];
+    this.setState({ searchString: ev.target.value }, () => {
+      console.log(this.state.searchString);
+      for (let x of Object.keys(this.searches)) {
+        if (!new RegExp(this.state.searchString, 'i').test(
+          this.searches[x].title) ||
+          this.searches[x].info.complete === 'complete') {
+          delete this.searches[x];
+        }
       }
-    }
-    // id : {title, subtasks, info}
-    this.setState({ foundTasks: this.searches });
+      // id : {title, subtasks, info}
+      this.setState({ foundTasks: this.searches });
+    });
   }
   goToSearch(id) {
-    console.log('preventReturn');
+    console.log(window.data.tasks[id].title);
     window.preventReturn = true;
     window.preventSelect = true;
     // go through IDs and find the trace paths
@@ -168,6 +170,100 @@ export default class StatusBar extends React.Component {
         display.goToToday();
       } 
     }
+    const selectMenus =
+    <>
+      <select defaultValue='' ref={this.functions} style={{ width: '35px' }}
+      onChange={() => {
+        this.functionsDict[this.functions.current.value].call();
+        this.functions.current.value = '';
+      }}>
+        <option value="" disabled hidden>edit</option>
+        <option value='newTask'>
+          new task (return)</option>
+        <option value='newSubtask'>
+          new subtask (shift-return)</option>
+        <option value='cutTask'>
+          cut (ctrl-x)</option>
+        <option value='copyTask'>
+          copy (ctrl-c)</option>
+        <option value='copyTaskTrue'>
+          mirror (ctrl-shift-C)</option>
+        <option value='pasteTask'>
+          paste (ctrl-v)</option>
+        <option value='pasteTaskTask'>
+          paste as subtask (ctrl-shift-V)</option>
+        <option value="deleteTask">
+          delete (ctrl-delete)</option>
+      </select>
+      <select defaultValue='' ref={this.move} style={{ width: '45px' }}
+        onChange={() => {
+          this.functionsDict[this.move.current.value].call();
+          this.move.current.value = '';
+        }}>
+        <option value="" disabled hidden>move</option>
+        <option value="moveTaskUp">
+          move up (ctrl-w)</option>
+        <option value="moveTaskDown">
+          move down (ctrl-s)</option>
+        <option value="indent">
+          indent (ctrl-])</option>
+        <option value='unindent'>
+          unindent (ctrl-[)</option>
+        <option value="switchView">
+          following week/lists (ctrl-d)</option>
+        <option value="switchView(-1)">
+          previous week/lists (ctrl-a)</option>
+        <option value="listEditMigrate">
+          migrate date</option>
+        <option value="listEditClear">
+          clear list</option>
+        <option value="displayTable">
+          display as table</option>
+        <option value="togglePast">
+          show/hide past dates</option>
+      </select>
+      <select defaultValue='' ref={this.options} onChange={() => {
+        this.functionsDict[this.options.current.value].call();
+        this.options.current.value = '';
+      }}
+        style={{ width: '60px' }}>
+        <option value="" disabled hidden>settings</option>
+        <option value='focus'>focus on list (ctrl-f)</option>
+        <option value='zoom'>focus on view (ctrl-shift-F)</option>
+        <option value='toggleComplete'>
+          show/hide complete (ctrl-h)</option>
+        <option value='undo'>undo (ctrl-z)</option>
+        <option value='backup'>backup</option>
+        <option value='restore'>restore</option>
+        <option value='reset'>reset</option>
+        <option value='toggleSounds'>toggle sounds</option>
+        <option value='toggleMode'>toggle day/night</option>
+        <option value='setThemeSpace'>theme: space</option>
+        <option value='setThemeSky'>theme: sky</option>
+        <option value='setThemeWater'>theme: water</option>
+        <option value='setThemeEarth'>theme: earth</option>
+        <option value='setThemeFire'>theme: fire</option>
+      </select>
+      {
+        window.innerWidth > 700 &&
+        <>
+        <ListMenu />
+        <select defaultValue='' ref={this.upcoming} onChange={() => {
+          this.goToSearch(this.upcoming.current.value);
+          this.upcoming.current.value = '';
+        }} style={{width: '75px'}}>
+          <option value="" disabled hidden>upcoming</option>
+          {deadlineItems.map(x => (
+            <option value={util.stripR(x[1])}>
+              {x[0].slice(0, x[0].length - 5)}: {
+              window.data.tasks[util.stripR(x[1])].title}
+            </option>
+          ))}
+        </select>
+        </>
+      }
+      <span className='tutorialLink' onClick={this.tutorial}>help</span>
+    </>
     return (
       <>
       <div className='statusBar'>
@@ -207,94 +303,14 @@ export default class StatusBar extends React.Component {
           }
         </div>
         <Timer />
-        <div className='buttonBar nowrap'>
-          <select defaultValue='' ref={this.functions} style={{ width: '35px' }}
-            onChange={() => {
-              this.functionsDict[this.functions.current.value].call();
-              this.functions.current.value = '';
-            }}>
-            <option value="" disabled hidden>edit</option>
-            <option value='newTask'>
-              new task (return)</option>
-            <option value='newSubtask'>
-              new subtask (shift-return)</option>
-            <option value='cutTask'>
-              cut (ctrl-x)</option>
-            <option value='copyTask'>
-              copy (ctrl-c)</option>
-            <option value='copyTaskTrue'>
-              mirror (ctrl-shift-C)</option>
-            <option value='pasteTask'>
-              paste (ctrl-v)</option>
-            <option value='pasteTaskTask'>
-              paste as subtask (ctrl-shift-V)</option>
-            <option value="deleteTask">
-              delete (ctrl-delete)</option>
-          </select>
-          <select defaultValue='' ref={this.move} style={{ width: '45px' }}
-            onChange={() => {
-              this.functionsDict[this.move.current.value].call();
-              this.move.current.value = '';
-            }}>
-            <option value="" disabled hidden>move</option>
-            <option value="moveTaskUp">
-              move up (ctrl-w)</option>
-            <option value="moveTaskDown">
-              move down (ctrl-s)</option>
-            <option value="indent">
-              indent (ctrl-])</option>
-            <option value='unindent'>
-              unindent (ctrl-[)</option>
-            <option value="switchView">
-              following week/lists (ctrl-d)</option>
-            <option value="switchView(-1)">
-              previous week/lists (ctrl-a)</option>
-            <option value="listEditMigrate">
-              migrate date</option>
-            <option value="listEditClear">
-              clear list</option>
-            <option value="displayTable">
-              display as table</option>
-            <option value="togglePast">
-              show/hide past dates</option>
-          </select>
-          <select defaultValue='' ref={this.options} onChange={() => {
-            this.functionsDict[this.options.current.value].call();
-            this.options.current.value = '';
-          }}
-            style={{ width: '60px' }}>
-            <option value="" disabled hidden>settings</option>
-            <option value='focus'>focus on list (ctrl-f)</option>
-            <option value='zoom'>focus on view (ctrl-shift-F)</option>
-            <option value='toggleComplete'>
-              show/hide complete (ctrl-h)</option>
-            <option value='undo'>undo (ctrl-z)</option>
-            <option value='backup'>backup</option>
-            <option value='restore'>restore</option>
-            <option value='reset'>reset</option>
-            <option value='toggleSounds'>toggle sounds</option>
-            <option value='toggleMode'>toggle day/night</option>
-            <option value='setThemeSpace'>theme: space</option>
-            <option value='setThemeSky'>theme: sky</option>
-            <option value='setThemeWater'>theme: water</option>
-            <option value='setThemeEarth'>theme: earth</option>
-            <option value='setThemeFire'>theme: fire</option>
-          </select>
-          <ListMenu />
-          <select defaultValue='' ref={this.upcoming} onChange={() => {
-            this.goToSearch(this.upcoming.current.value);
-            this.upcoming.current.value = '';
-          }} style={{width: '75px'}}>
-            <option value="" disabled hidden>upcoming</option>
-            {deadlineItems.map(x => (
-              <option value={util.stripR(x[1])}>
-                {x[0].slice(0, x[0].length - 5)}: {
-                window.data.tasks[util.stripR(x[1])].title}
-              </option>
-            ))}
-          </select>
-          <span className='tutorialLink' onClick={this.tutorial}>help</span>
-        </div>
+        {window.innerWidth < 700 && 
+          selectMenus
+        }
+        {window.innerWidth > 700 &&
+          <div className='buttonBar nowrap'>
+            {selectMenus}
+          </div>
+        }
       </div>
       {this.state.tutorial && 
         <div className='tutorial tutorialShow'>

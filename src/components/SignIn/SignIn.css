@@ -97,3 +97,13 @@ button {
 .radioButton:not(.selected):hover {
   background: rgba(101, 138, 149, 0.5);
 }
+
+@media (max-width: 700px) {
+  .radioButton, .loginButton {
+    font-size: 20px;
+  }
+
+  .signInput {
+    height: 1.5em;
+  }
+}

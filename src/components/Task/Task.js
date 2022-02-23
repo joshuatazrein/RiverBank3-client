@@ -34,6 +34,7 @@ export default class Task extends React.Component {
     if (!this.state.info.excludes) this.state.info.excludes = [];
   }
   displayOptions(ev, showHide) {
+    if (!ev) ev = {target: $('<div></div>')};
     edit.save(this);
     if (this.freeze === true) return;
     if (window.selected !== this) {
@@ -802,6 +803,31 @@ export default class Task extends React.Component {
               }}>
               <div className='buttonBar fullWidth'>
                 <div className='buttonBar'>
+                  <label>functions:</label>
+                  <button
+                    title='new task'
+                    className='button'
+                    onClick={edit.newTask}
+                  >+</button>
+                  <button
+                    title='new subtask'
+                    className='button'
+                    onClick={() => edit.newTask('task')}
+                  >&#8618;</button>
+                  <button
+                    title='delete'
+                    className='button'
+                    onClick={() => edit.deleteTask()}
+                  >&#x2327;</button>
+                  <button
+                    title='move to task'
+                    className='button'
+                    onClick={() => edit.searchMove()}
+                  >&#8405;</button>
+                </div>
+              </div>
+              <div className='buttonBar fullWidth'>
+                <div className='buttonBar'>
                   <label>status:</label>
                   <button
                     title='toggle complete'
@@ -859,7 +885,7 @@ export default class Task extends React.Component {
               <div className='timeDiv buttonBar fullWidth' style={{
                 flexWrap: 'nowrap',
               }}>
-                <div class='buttonBar'>
+                <div className='buttonBar'>
                   <label>type:</label>
                   <button className='button timeSwitch'
                     onClick={() => {
@@ -877,7 +903,7 @@ export default class Task extends React.Component {
                     {this.state.info.type}
                   </button>
                 </div>
-                <div class='buttonBar'>
+                <div className='buttonBar'>
                   <label>{
                     this.state.info.type === 'event' ? 'time:' : 'start:'
                   }</label>
