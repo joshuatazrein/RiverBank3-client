@@ -1,7 +1,3 @@
-.container.zoomed .list.zoomed {
-  max-width: 750px;
-}
-
 .list {
   height: 100%;
   padding: 5px 5px 0 5px;
@@ -75,21 +71,12 @@
   float: none;
   clear: left;
   width: 100%;
-  height: 80vh;
-}
-
-/*
-
-.frameContainer.focused .listFrame {
-  height: max-content;
-  overflow: hidden;
+  height: calc(100vh - 150px);
 }
 
 .frameContainer.focused .list > .listFrame > .listContent {
-  padding-bottom: 100px;
-  height: max-content;
-  overflow: hidden;
-} */
+  padding-bottom: 0;
+}
 
 @media (max-width: 450px) {
   .list {

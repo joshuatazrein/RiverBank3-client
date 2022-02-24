@@ -92,6 +92,7 @@ export function focus(set) {
     focusView.props.parent.changeIndex(focusView.props.parent.frames
       .findIndex(x => x.current.props.id === focusView.props.id));
   }
+  window.app.current.setState({focused: focusSet});
   window.app.current.state.bank.current.setState(prevState => (
     {
       info: {
@@ -200,17 +201,8 @@ export function zoom() {
     zoomedSetting = '';
   } else {
     zoomedSetting = 'zoomed';
-    if (!window.selected) { return }; // no zoomie
   }
-  var zoomFrame = util.getFrame(window.selected);
-  zoomFrame.setState({ zoomed: zoomedSetting });
-  window.app.current.setState({ zoomed: zoomedSetting });
-  if (!window.zoomed) {
-    // unzoom
-    window.zoomed = window.selected;
-  } else {
-    window.zoomed = undefined;
-  }
+  window.app.current.setState({zoomed: zoomedSetting});
   setTimeout(
     updateAllSizes, 200
   )

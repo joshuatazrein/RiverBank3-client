@@ -139,7 +139,6 @@ export default class Frame extends React.Component {
         ${this.state.info.focused} ${this.state.zoomed} ${this.props.id}`}
         onScroll={this.updatePosition} ref={this.frameContainer}>
         {this.props.id === 'river' &&
-        this.state.info.focused !== 'focused' &&
         <div className='monthYear'>
           <span>{
             window.data.tasks[this.state.subtasks[this.state.info.index]]

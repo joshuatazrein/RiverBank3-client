@@ -937,6 +937,12 @@ export default class Task extends React.Component {
                       this.toggleRepeat('Sun');
                     }}>U</button>
                 </div>
+                <button className={'button noWidth' + repeatsOn['Sun']}
+                  onClick={() => {
+                  }}>weekly</button>
+                <button className={'button noWidth' + repeatsOn['Sun']}
+                  onClick={() => {
+                  }}>daily</button>
               </div>
               <div className='timeDiv buttonBar fullWidth' style={{
                 flexWrap: 'nowrap',

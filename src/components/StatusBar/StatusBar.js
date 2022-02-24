@@ -228,8 +228,8 @@ export default class StatusBar extends React.Component {
       }}
         style={{ width: '60px' }}>
         <option value="" disabled hidden>settings</option>
-        <option value='focus'>focus on list (ctrl-f)</option>
-        <option value='zoom'>focus on view (ctrl-shift-F)</option>
+        <option value='focus'>toggle orientation (ctrl-f)</option>
+        <option value='zoom'>toggle zoom (ctrl-shift-F)</option>
         <option value='toggleComplete'>
           show/hide complete (ctrl-h)</option>
         <option value='undo'>undo (ctrl-z)</option>

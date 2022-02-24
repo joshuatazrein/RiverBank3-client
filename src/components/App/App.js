@@ -15,6 +15,7 @@ export default class App extends React.Component {
 
   constructor(props) {
     super(props);
+    var zoomSetting = window.innerWidth < 700 ? 'zoomed' : '';
     this.state = {
       hideComplete: window.data.settings.hideComplete,
       bank: React.createRef(),
@@ -23,7 +24,7 @@ export default class App extends React.Component {
       mode: window.data.settings.mode,
       focused: window.data.settings.focused,
       popSnd: new Audio(popSnd),
-      zoomed: '',
+      zoomed: zoomSetting,
       disableSelect: '',
       contextMenu: React.createRef(),
       deadlines: window.data.settings.deadlines,
@@ -53,27 +54,42 @@ export default class App extends React.Component {
         <StatusBar parent={this} ref={this.statusBar} 
           deadlines={this.state.deadlines} 
           startdates={this.state.startdates} />
-        <div className={'container ' + this.state.hideComplete + ' ' +
-          this.state.zoomed + ' ' + this.state.disableSelect}>
-          <Frame id='bank' info={{
-            ...window.data.tasks['bank'].info,
-            focused: window.data.settings.focused
-          }}
-            subtasks={window.data.tasks['bank'].subtasks} ref={this.state.bank} />
-          <Frame id='river' info={{
-            ...window.data.tasks['river'].info,
-            focused: window.data.settings.focused,
-          }}
-            deadlines={this.state.deadlines}
-            startdates={this.state.startdates}
-            subtasks={window.data.tasks['river'].subtasks} ref={this.state.river} />
+        <div className='appContainer'>
+          <div className={'container ' + this.state.hideComplete + ' ' +
+            this.state.zoomed + ' ' + this.state.disableSelect + ' ' +
+            this.state.focused}>
+            <Frame id='bank' info={{
+              ...window.data.tasks['bank'].info,
+              focused: window.data.settings.focused
+            }}
+              subtasks={window.data.tasks['bank'].subtasks} ref={this.state.bank} />
+            <SlideButton 
+              focusMode={window.data.settings.focused} 
+            />
+            <Frame id='river' info={{
+              ...window.data.tasks['river'].info,
+              focused: window.data.settings.focused,
+            }}
+              deadlines={this.state.deadlines}
+              startdates={this.state.startdates}
+              subtasks={window.data.tasks['river'].subtasks} ref={this.state.river} />
+          </div>
+          <SelectMenu ref={this.state.contextMenu}/>
+          {window.selected && this.state.displayTable !== 'none' &&
+            <TableDisplay />}
         </div>
-        <SelectMenu ref={this.state.contextMenu}/>
-        {window.selected && this.state.displayTable !== 'none' &&
-          <TableDisplay />}
       </>
     )
   }
+}
+
+function SlideButton (props) {
+  const text = props.focusMode === '' ? <>&#11109;</> : <>&#11108;</>;
+  return (
+    <div className={`slideButton symbol`}>
+      •
+    </div>
+  )
 }
 
 // extra function menu tacked on after the drag/drop context

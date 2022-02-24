@@ -321,6 +321,9 @@ export function init() {
   window.addEventListener('click', () => 
     window.app.current.state.contextMenu.current.setState({ display: 'none' }))
   document.addEventListener('fullscreenchange', display.updateAllSizes);
+  if (window.innerWidth < 700) {
+    display.focus('focused');
+  }
 }
 
 load();

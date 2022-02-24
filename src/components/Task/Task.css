@@ -162,6 +162,11 @@
   width: 3em;
 }
 
+.button.noWidth {
+  width: unset;
+  max-width: unset;
+}
+
 .task .task.heading > div > textarea {
   font-weight: var(--fontWeight);
 }
