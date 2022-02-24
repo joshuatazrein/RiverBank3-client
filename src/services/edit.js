@@ -206,12 +206,13 @@ export function indentTask(unindent) {
 }
 
 export function searchMove() {
-  cutTask();
   const where = prompt('type task to move to:');
+  if (where.length === 0 || where === ' ') return;
+  cutTask();
   const statusBar = window.app.current.statusBar.current;
   statusBar.search({target: {value: where}});
   setTimeout(statusBar.goToFirst, 250);
-  setTimeout(() => pasteTask('list'), 500);
+  setTimeout(() => pasteTask('task'), 500);
 }
 
 export function moveTask(direction) {
@@ -222,8 +223,9 @@ export function moveTask(direction) {
   } else {
     subtasks = window.selected.props.parent.state.subtasks;
   }
+  const id = window.selected.props.id;
   let selectedPlace =
-    subtasks.findIndex(x => x === window.selected.props.id);
+    subtasks.findIndex(x => x === id);
   if (selectedPlace === 0 && direction === -1) return;
   else if (selectedPlace === subtasks.length
     && direction === 1) return;
@@ -243,6 +245,7 @@ export function moveTask(direction) {
   const spliceTask = subtasks.splice(selectedPlace, 1)[0];
   subtasks.splice(selectedPlace + insertPlace, 0, spliceTask);
   window.selected.props.parent.setState({ subtasks: subtasks });
+  window.selected.props.parent.scrollTo(id);
   save(window.selected.props.parent, 'task');
 }
 

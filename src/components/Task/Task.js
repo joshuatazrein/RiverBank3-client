@@ -802,8 +802,7 @@ export default class Task extends React.Component {
                 }
               }}>
               <div className='buttonBar fullWidth'>
-                <div className='buttonBar'>
-                  <label>functions:</label>
+                <div className='buttonBar wideButs'>
                   <button
                     title='new task'
                     className='button'
@@ -811,24 +810,44 @@ export default class Task extends React.Component {
                   >+</button>
                   <button
                     title='new subtask'
-                    className='button'
+                    className='button symbol'
                     onClick={() => edit.newTask('task')}
                   >&#8618;</button>
                   <button
                     title='delete'
-                    className='button'
+                    className='button symbol'
                     onClick={() => edit.deleteTask()}
                   >&#x2327;</button>
                   <button
                     title='move to task'
-                    className='button'
+                    className='button symbol'
                     onClick={() => edit.searchMove()}
                   >&#8405;</button>
+                  <button
+                    title='move up'
+                    className='button symbol'
+                    onClick={() => edit.moveTask(-1)}
+                  >&#8593;</button>
+                  <button
+                    title='move down'
+                    className='button symbol'
+                    onClick={() => edit.moveTask(1)}
+                  >&#8595;</button>
+                  <button
+                    title='unindent task'
+                    className='button symbol'
+                    onClick={() => edit.indentTask(true)}
+                  >&#8592;</button>
+                  <button
+                    title='indent task'
+                    className='button symbol'
+                    onClick={() => edit.indentTask()}
+                  >&#8594;</button>
                 </div>
               </div>
               <div className='buttonBar fullWidth'>
                 <div className='buttonBar'>
-                  <label>status:</label>
+                  <label>is:</label>
                   <button
                     title='toggle complete'
                     className={'button ' + this.state.info.complete}
@@ -850,8 +869,8 @@ export default class Task extends React.Component {
                     onClick={() => this.toggleCollapse()}>
                     {'[]'}</button>
                 </div>
-                <div className='buttonBar'>
-                  <label>repeat:</label>
+                <div className='buttonBar panel'>
+                  <label>on:</label>
                   <button className={'button ' + repeatsOn['Mon']}
                     onClick={() => { 
                       this.toggleRepeat('Mon'); 
@@ -905,7 +924,7 @@ export default class Task extends React.Component {
                 </div>
                 <div className='buttonBar'>
                   <label>{
-                    this.state.info.type === 'event' ? 'time:' : 'start:'
+                    this.state.info.type === 'event' ? 'at:' : 'from:'
                   }</label>
                   <span className='startSpan start'>
                     {this.state.triggeredInputs === 'start-s' ?
@@ -972,7 +991,7 @@ export default class Task extends React.Component {
                 </div>
                 <div class='buttonBar'>
                   <label>{
-                    this.state.info.type === 'event' ? 'length:' : 'deadline:'
+                    this.state.info.type === 'event' ? 'for:' : 'until:'
                   }</label>
                   <span className='startSpan end'>
                     {this.state.triggeredInputs === 'end-s' ?

@@ -90,3 +90,9 @@
   height: max-content;
   overflow: hidden;
 } */
+
+@media (max-width: 450px) {
+  .list {
+    width: 100vw;
+  }
+}

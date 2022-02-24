@@ -161,14 +161,17 @@ ul {
   border-radius: 5px;
 }
 
+.symbol {
+  font-family: monospace !important;
+}
+
 @media (max-width: 700px) {
   #root {
-    padding-top: 50px;
-    padding-bottom: 30px;
+    padding-top: 80px;
   }
 
   .monthYear {
-    top: calc(50% + 53px);
+    top: calc(50% + 30px);
   }
 
   .buttonBar.nowrap {

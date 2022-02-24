@@ -49,14 +49,14 @@
 
 .options {
   height: 112px;
-  width: calc(100% + 5px);
+  width: calc(100% - 5px);
   max-width: 350px;
-  min-width: 310px;
+  min-width: 275px;
   background-color: var(--background);
   position: absolute;
   top: calc(50% + 10px);
   left: -5px;
-  z-index: 2;
+  z-index: 4;
   opacity: 1;
   border-radius: 5px;
   border: 1px solid var(--border);
@@ -125,12 +125,37 @@
 .button {
   font: var(--menufont);
   font-size: 12px;
-  height: 1.5em;
+  /* height: 1.5em; */
   border: 1px solid var(--border);
   border-radius: 6px;
   margin: 1px;
   cursor: pointer;
-  width: 1.25em;
+  width: 20px;
+  /* max-width: 5vw; */
+  height: 20px;
+}
+
+.buttonBar.panel * {
+  margin: 0;
+  border-radius: 0;
+  border-right: none;
+}
+
+.buttonBar.panel :last-child {
+  border-right: 1px solid var(--border);
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.buttonBar.panel :nth-child(2) {
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+.wideButs .button {
+  width: 24px;
+  height: 24px;
+  max-width: 8vw;
 }
 
 .button.timeSwitch {
@@ -366,6 +391,6 @@ label {
 
 @media only screen and (max-width: 700px) {
   .timeDiv span {
-    font-size: 18px;
+    font-size: 16px;
   }
 }
