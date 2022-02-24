@@ -391,10 +391,14 @@ export default class Task extends React.Component {
     var mouseup = () => {
 
       // end drag
-      if (dragged === true || $(ev.target).hasClass('infoStartDate')) {
+      if (dragged === true) {
         window.removeEventListener('mousemove', changeTime);
         window.app.current.setState({ disableSelect: '' });
-        if (unit === 'e' || this.state.info.type === 'event') {
+        if (
+          unit === 'e' || 
+          this.state.info.type === 'event' ||
+          $(ev.target).hasClass('infoStartDate')
+        ) {
           this.displayOptions('hide');
         } else if (unit === 's') {
           this.setState({ displayOptions: 'show' });
@@ -803,72 +807,105 @@ export default class Task extends React.Component {
               }}>
               <div className='buttonBar fullWidth'>
                 <div className='buttonBar wideButs'>
-                  <button
-                    title='new task'
-                    className='button'
-                    onClick={edit.newTask}
-                  >+</button>
-                  <button
-                    title='new subtask'
-                    className='button symbol'
-                    onClick={() => edit.newTask('task')}
-                  >&#8618;</button>
-                  <button
-                    title='delete'
-                    className='button symbol'
-                    onClick={() => edit.deleteTask()}
-                  >&#x2327;</button>
-                  <button
-                    title='move to task'
-                    className='button symbol'
-                    onClick={() => edit.searchMove()}
-                  >&#8405;</button>
-                  <button
-                    title='move up'
-                    className='button symbol'
-                    onClick={() => edit.moveTask(-1)}
-                  >&#8593;</button>
-                  <button
-                    title='move down'
-                    className='button symbol'
-                    onClick={() => edit.moveTask(1)}
-                  >&#8595;</button>
-                  <button
-                    title='unindent task'
-                    className='button symbol'
-                    onClick={() => edit.indentTask(true)}
-                  >&#8592;</button>
-                  <button
-                    title='indent task'
-                    className='button symbol'
-                    onClick={() => edit.indentTask()}
-                  >&#8594;</button>
+                  <div className='labelButton'>
+                    <button
+                      title='new task'
+                      className='button'
+                      onClick={edit.newTask}
+                    >+</button>
+                    <label>task</label>
+                  </div>
+                  <div className='labelButton'>
+                    <button
+                      title='new subtask'
+                      className='button symbol'
+                      onClick={() => edit.newTask('task')}
+                    >&#8618;</button>
+                    <label>sub.</label>
+                  </div>
+                  <div className='labelButton'>
+                    <button
+                      title='delete'
+                      className='button symbol'
+                      onClick={() => edit.deleteTask()}
+                    >&#x2327;</button>
+                    <label>delete</label>
+                  </div>
+                  <div className='labelButton'>
+                    <button
+                      title='move to task'
+                      className='button symbol'
+                      onClick={() => edit.searchMove()}
+                    >&#8405;</button>
+                    <label>move</label>
+                  </div>
+                  <div className='labelButton'>
+                    <button
+                      title='move up'
+                      className='button symbol'
+                      onClick={() => edit.moveTask(-1)}
+                    >&#8593;</button>
+                    <label>up</label>
+                  </div>
+                  <div className='labelButton'>
+                    <button
+                      title='move down'
+                      className='button symbol'
+                      onClick={() => edit.moveTask(1)}
+                    >&#8595;</button>
+                    <label>down</label>
+                  </div>
+                  <div className='labelButton'>
+                    <button
+                      title='unindent task'
+                      className='button symbol'
+                      onClick={() => edit.indentTask(true)}
+                    >&#8592;</button>
+                    <label>out</label>
+                  </div>
+                  <div className='labelButton'>
+                    <button
+                      title='indent task'
+                      className='button symbol'
+                      onClick={() => edit.indentTask()}
+                    >&#8594;</button>
+                    <label>in</label>
+                  </div>
+                  <div className='labelButton'>
+                    <button
+                      title='toggle complete'
+                      className={'button symbol' + this.state.info.complete}
+                      onClick={this.toggleComplete}>
+                      √</button>
+                    <label>done</label>
+                  </div>
+                  <div className='labelButton'>
+                    <button
+                      title='toggle important'
+                      className={'button symbol' + this.state.info.important}
+                      onClick={this.toggleImportant}>
+                      !</button>
+                    <label>imp.</label>
+                  </div>
+                  <div className='labelButton'>
+                    <button
+                      title='toggle maybe'
+                      className={'button symbol' + this.state.info.maybe}
+                      onClick={this.toggleMaybe}>
+                      ?</button>
+                    <label>maybe</label>
+                  </div>
+                  <div className='labelButton'>
+                    <button
+                      title='toggle fold'
+                      className={'button'}
+                      onClick={() => this.toggleCollapse()}>
+                      {'[]'}</button>
+                    <label>fold</label>
+                  </div>
                 </div>
               </div>
               <div className='buttonBar fullWidth'>
-                <div className='buttonBar'>
-                  <label>is:</label>
-                  <button
-                    title='toggle complete'
-                    className={'button ' + this.state.info.complete}
-                    onClick={this.toggleComplete}>
-                    √</button>
-                  <button
-                    title='toggle important'
-                    className={'button ' + this.state.info.important}
-                    onClick={this.toggleImportant}>
-                    !</button>
-                  <button
-                    title='toggle maybe'
-                    className={'button ' + this.state.info.maybe}
-                    onClick={this.toggleMaybe}>
-                    ?</button>
-                  <button
-                    title='toggle fold'
-                    className={'button'}
-                    onClick={() => this.toggleCollapse()}>
-                    {'[]'}</button>
-                </div>
                 <div className='buttonBar panel'>
                   <label>on:</label>
                   <button className={'button ' + repeatsOn['Mon']}
@@ -1067,7 +1104,9 @@ export default class Task extends React.Component {
                 onMouseUp={closeDrag}>
               </span> :
               <span className='startDate infoStartDate'
-                onClick={(ev) => this.displayOptions(ev)}
+                onMouseUp={(ev) => {
+                  this.displayOptions(ev);
+                }}
                 ref={this.optionsButton}
                 onMouseDown={(ev) => {
                   this.timeDrag(ev, 's', 'start')
